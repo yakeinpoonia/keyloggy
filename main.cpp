@@ -178,10 +178,11 @@ void captureEvents(std::string &kbd_device){
 
     // input_event object to make a buffer to store key inputs
     struct input_event inputs;
+    
+    // bool to hold if we are holding key 
+    bool keyhold = false;
 
     while(1){
-
-        // write(output_fd, "yakein", 7);
         
         // Reading from input_fd in inputs struct
         read(input_fd, &inputs, sizeof(inputs));
@@ -191,6 +192,7 @@ void captureEvents(std::string &kbd_device){
 
         // Key is released
         if(inputs.value == 0){
+            keyhold = false;
             auto it = keyMap.find(inputs.code);
             if(it != keyMap.end()){
                 std::string result = "key released: " + it->second + "\n";
@@ -214,7 +216,8 @@ void captureEvents(std::string &kbd_device){
         }
         
         // Key is hold
-        if(inputs.value == 2){
+        if(inputs.value == 2 && !keyhold){
+            keyhold = true;
             auto it = keyMap.find(inputs.code);
             if(it != keyMap.end()){
                 std::string result = "key hold: " + it->second + "\n";

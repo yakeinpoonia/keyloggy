@@ -23,8 +23,8 @@ std::unordered_map<__u16, std::string> keyMap = {
     {KEY_MINUS, "-"}, {KEY_EQUAL, "="}, {KEY_LEFTBRACE, "["}, 
     {KEY_RIGHTBRACE, "]"}, {KEY_SEMICOLON, ";"}, {KEY_APOSTROPHE, "'"},
     {KEY_GRAVE, "`"}, {KEY_BACKSLASH, "\\"}, {KEY_COMMA, ","},
-    {KEY_DOT, "."}, {KEY_SLASH, "/"}, {KEY_SPACE, " "},
-    
+    {KEY_DOT, "."}, {KEY_SLASH, "/"},    
+
     // Numpad
     {KEY_KP0, "0"}, {KEY_KP1, "1"}, {KEY_KP2, "2"}, {KEY_KP3, "3"},
     {KEY_KP4, "4"}, {KEY_KP5, "5"}, {KEY_KP6, "6"}, {KEY_KP7, "7"},
@@ -37,7 +37,8 @@ std::unordered_map<__u16, std::string> keyMap = {
     {KEY_BACKSPACE, "[BACKSPACE]"}, {KEY_ESC, "[ESC]"}, {KEY_DELETE, "[DEL]"},
     {KEY_INSERT, "[INS]"}, {KEY_HOME, "[HOME]"}, {KEY_END, "[END]"},
     {KEY_PAGEUP, "[PGUP]"}, {KEY_PAGEDOWN, "[PGDN]"}, {KEY_UP, "[UP]"},
-    {KEY_DOWN, "[DOWN]"}, {KEY_LEFT, "[LEFT]"}, {KEY_RIGHT, "[RIGHT]"},
+    {KEY_DOWN, "[DOWN]"}, {KEY_LEFT, "[LEFT]"}, {KEY_RIGHT, "[RIGHT]"}, 
+    {KEY_SPACE, "[SPACE]"}
     
     // Function keys
     {KEY_F1, "[F1]"}, {KEY_F2, "[F2]"}, {KEY_F3, "[F3]"}, {KEY_F4, "[F4]"},

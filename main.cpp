@@ -72,6 +72,28 @@ std::unordered_map<__u16, std::string> shiftKeyMap = {
     {KEY_M, "M"},
 };
 
+// Check if key is a modifier key
+bool isModifier(__u16 keycode) {
+    return (keycode == KEY_LEFTSHIFT || keycode == KEY_RIGHTSHIFT ||
+            keycode == KEY_LEFTALT || keycode == KEY_RIGHTALT ||
+            keycode == KEY_LEFTCTRL || keycode == KEY_RIGHTCTRL ||
+            keycode == KEY_LEFTMETA || keycode == KEY_RIGHTMETA);
+}
+
+// Get the modifier name to print
+std::string getModifierName(__u16 keycode) {
+    if(keycode == KEY_LEFTSHIFT || keycode == KEY_RIGHTSHIFT)
+        return "Shift";
+    else if(keycode == KEY_LEFTALT || keycode == KEY_RIGHTALT)
+        return "Alt";
+    else if(keycode == KEY_LEFTCTRL || keycode == KEY+RIGHTCTRL)
+        return "Ctrl";
+    else if(keycode == KEY_LEFTMETA || keycode == KEY_RIGHTMETA)
+        return "Meta";
+    else
+        return "[UNKOWN]";
+}
+
 void captureEvents(std::string &kbd_device){
 
     // Opening keyboard file in Read Mode

